@@ -1,0 +1,19 @@
+{
+  "name": "uokik-fast-search",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "async": "~0.2.9",
+    "html": "0.0.7",
+    "jsdom": "~0.8.3",
+    "request": "~2.27.0",
+    "iconv": "~2.0.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD"
+}
