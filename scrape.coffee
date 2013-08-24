@@ -9,7 +9,6 @@ YAML      = require "yamljs"
 url       = require "url"
 
 base_uri = "http://decyzje.uokik.gov.pl/nd_wz_um.nsf/WWW-wszystkie?OpenView"
-links    = {}
 delay    = 200
 
 data_dir = __dirname + "/terms"
@@ -77,25 +76,17 @@ scrape_list_page = (start) ->
                 .replace(/<br\s*\/?>/g, "\n")
                 .replace(/<.*?>/g, "")
                 .split("\n")
+                .slice(3)                 # Drop first three lines
                 .filter( (e) -> Boolean e.trim() ) # Drop empty
-                .slice(3)              # Drop first three lines
-                .join ("\n")
-                .trim()
+                .join("\n")
                 .replace(/[ \t]+/, " ")
-                .replace(/^"/, '')        # remove opening parentheses - Doesn't work - why?
-                .replace(/\(.*?\)$/), ''  # remove comment block
+                .trim()
+                .replace(/^"/, '')        # remove opening parentheses
+                .replace(/\(.*?\)$/, '')  # remove comment block
                 .trim()
                 .replace(/"$/, '')        # remove closing parentheses
               
               console.log content
-
-              # if not match or not match[1]
-              #   # Something goes wrong
-              #   # Register html is very irregular and sometimes unexpected things happen there.
-              #   throw Error """
-              #     Can't match term in cell #{number}:
-              #     '#{html}'
-              #   """
 
               data =
                 meta    : { number, type, original_uri }                  
@@ -110,6 +101,6 @@ scrape_list_page = (start) ->
             setTimeout (scrape_list_page.bind null, start), delay
           
           else # We have 'em all
-            console.dir links
+            console.log "Done."
 
 scrape_list_page 1
