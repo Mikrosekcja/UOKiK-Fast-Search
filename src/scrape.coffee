@@ -5,32 +5,21 @@ jsdom     = require "jsdom"
 async     = require "async"
 fs        = require "fs"
 iconv     = new (require "iconv").Iconv "windows-1250", "utf-8"
-YAML      = require "yamljs"
+yaml      = require "js-yaml"
 url       = require "url"
 
 base_uri = "http://decyzje.uokik.gov.pl/nd_wz_um.nsf/WWW-wszystkie?OpenView"
 delay    = 200
 
-data_dir = __dirname + "/terms"
+data_dir = __dirname + "/../terms"
 if not fs.existsSync data_dir then fs.mkdirSync data_dir
 
-save_term = (number, data) ->
-  term = """
-    ---
-    
-    #{YAML.stringify data.meta, 4, 2}
-    
-    ---
-
-    #{data.content}
-
-  """
-
-  
-  path = data_dir + "/#{number}.html.md"
+save_term = (data) ->  
+  path = data_dir + "/#{data._id}.yaml"
   fs.exists path, (exists) ->
-    if data.content? or not exists
-      fs.writeFile path, term, (error) -> if error then throw error
+    if not exists
+      fs.writeFile path, yaml.safeDump data, (error) ->
+        if error then throw error
 
 scrape_list_page = (start) ->
   uri = base_uri + "&Start=" + start
@@ -57,13 +46,10 @@ scrape_list_page = (start) ->
           if cells.length isnt 0
             cells.each (td) ->
               errors    = []
-              type      = "Register item"
               
-              number    = parseInt td.b.only(0).textContent
-              console.log number
-              # console.log td.innerHTML
+              _id    = parseInt td.b.only(0).textContent # number from the register
+              console.log _id
 
-              # TODO: run through URL
               try
                 original_uri = url.resolve uri, td.a.attributes.href.value
               catch e
@@ -71,7 +57,7 @@ scrape_list_page = (start) ->
                 errors.push e
 
               # Try to match term
-              content  = td
+              text = td
                 .innerHTML
                 .replace(/<br\s*\/?>/g, "\n")
                 .replace(/<.*?>/g, "")
@@ -81,20 +67,18 @@ scrape_list_page = (start) ->
                 .join("\n")
                 .replace(/[ \t]+/, " ")
                 .trim()
-                .replace(/^"/, '')        # remove opening parentheses
+                .replace(/^["'«»‘’‚‛“”„‟‹›]/, '')        # remove opening parentheses
                 .replace(/\(.*?\)$/, '')  # remove comment block
                 .trim()
-                .replace(/"$/, '')        # remove closing parentheses
+                .replace(/["'«»‘’‚‛“”„‟‹›]$/, '')        # remove closing parentheses
               
-              console.log content
+              console.log text
 
-              data =
-                meta    : { number, type, original_uri }                  
-                content : content
+              data = { _id, original_uri, text }
 
-              if errors.length then data.meta.errors = errors
+              if errors.length then data.errors = errors # FIXME: empty object gets stored
 
-              save_term number, data
+              save_term data
 
             start += cells.length
 
