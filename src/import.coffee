@@ -19,6 +19,8 @@ words_re = ///
   ]+
   ///g
 
+index = {}
+
 split_words = (text) -> text.toLowerCase().match words_re
 
 save_term = (data, done) ->
@@ -26,16 +28,11 @@ save_term = (data, done) ->
   term.save (error) ->
     if error then return done error
     words = split_words data.text 
-    for wrd, position in words
-      Word.findById wrd, (error, word) ->
-        if error then return done error
-        if not word then word = new Word _id: wrd
-        console.log "#{term._id}\t: #{word._id}"
-        
-        word.terms.push term._id
-        word.save done
-  
-  
+    for word, position in words
+      if not index[word]? then index[word] = []
+      index[word].push data._id
+
+    do done  
 
 import_file = (file, done) ->
   # TODO: check if exists (?)
@@ -76,4 +73,9 @@ if require.main is module
 
   import_dir dir, (error) ->
     if error then throw error
-    console.log "all done!"
+    console.log "Import done!"
+    console.log "Saving index..."
+    for word, terms of index
+      wrd = new Word _id: word, terms: terms
+      wrd.save (error) ->
+        if error then throw error
