@@ -13,7 +13,9 @@
     "debug": "~0.7.2",
     "underscore.string": "~2.3.3",
     "source-map-support": "~0.2.3",
-    "js-yaml": "~2.1.0"
+    "js-yaml": "~2.1.0",
+    "flatiron": "~0.3.8",
+    "union": "~0.3.7"
   },
   "devDependencies": {},
   "scripts": {
