@@ -3,3 +3,4 @@ terms/
 lib/
 *.sublime-project
 *.sublime-workspace
+npm-debug.log
