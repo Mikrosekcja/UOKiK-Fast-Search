@@ -1,4 +1,5 @@
 node_modules/
 terms/
 lib/
-uokik-fast-search.sublime-project
+*.sublime-project
+*.sublime-workspace
