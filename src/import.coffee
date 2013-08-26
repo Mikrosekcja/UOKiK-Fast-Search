@@ -43,10 +43,10 @@ import_file = (file, done) ->
         if error.name is "ValidationError"
           console.error "ValidationError in #{file}"
           return do done
-        else done error
+        else return done error
 
-      else do done
-    
+      else return do done
+
   else do done
 
 import_dir = (dir, done) ->
@@ -65,17 +65,15 @@ if require.main is module
   console.log "Importing from #{dir}"
   mongoose.connect ("mongodb://localhost/terms")
 
-  # async.parallel [
-  #   Term.remove
-  #   Word.remove  
-  # ], (error) -> 
-  # if error then throw error
-
   import_dir dir, (error) ->
     if error then throw error
     console.log "Import done!"
     console.log "Saving index..."
-    for word, terms of index
-      wrd = new Word _id: word, terms: terms
-      wrd.save (error) ->
+    async.each ({word, terms} for word, terms of index),
+      (o, done) ->
+        word = new Word o
+        word.save done
+      (error) ->
         if error then throw error
+        do mongoose.connection.close
+        console.log "All done!"
