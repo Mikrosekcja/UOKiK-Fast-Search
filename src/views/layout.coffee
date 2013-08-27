@@ -1,6 +1,6 @@
 module.exports = ->
   doctype 5
-  html ->
+  html ng: app: "", ->
     head ->
       title "UOKiK Fast Search"
       meta charset: "utf-8"
@@ -89,6 +89,7 @@ module.exports = ->
         "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"
         "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"
         "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
-        # "/scripts/script.js"
+        "//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"
+        "/js/index.js"
         # TODO: static file server and frontend scripts compilation
       ]

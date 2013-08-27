@@ -18,18 +18,19 @@ module.exports =
 
       async.each words,
         (word, done) =>
+          # TODO: use levenshtein distances
           Word.findById word, (error, index) ->
             $ "Looking for #{word}"
             $ "%j", index
             if error      then done error
             if not index  then return do done
 
-
             for term in index.terms
               if not ranking[term] then ranking[term] = 1
               else                      ranking[term]++
 
             do done
+            
         (error) =>
           if error then @res.json error
           ranking = _.sortBy ({term, rank} for term, rank of ranking), "rank"
