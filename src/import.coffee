@@ -17,7 +17,7 @@ save_term = (data, done) ->
     words = split_words data.text 
     for word, position in words
       if not index[word]? then index[word] = []
-      index[word].push data._id
+      index[word].push data._id unless data._id in index[word]
 
     do done  
 
