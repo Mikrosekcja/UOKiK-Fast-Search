@@ -1,6 +1,15 @@
 module.exports = ->
+
+  # This array can be modified by views. It is used in the end of this file.
+  @scripts = [
+    "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"
+    "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"
+    "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
+    "//ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"
+  ]
+
   doctype 5
-  html ng: app: "", ->
+  html ng: app: "ufs", ->
     head ->
       title "UOKiK Fast Search"
       meta charset: "utf-8"
@@ -36,8 +45,21 @@ module.exports = ->
           cursor pointer
 
         body
-          padding-top 60px
+          padding-top 120px
 
+        #terms
+          margin-top 50px
+
+          a
+            color initial
+            &:hover
+              color initial
+              text-decoration: initial
+
+          .term .text
+            height 120px
+            overflow hidden
+            text-overflow ellipsis
       """
 
         
@@ -85,11 +107,4 @@ module.exports = ->
               target: "_blank"
               "Office of Competition and Consumer Protection."
       
-      script type: "text/javascript", src: url for url in [
-        "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"
-        "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"
-        "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
-        "//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"
-        "/js/index.js"
-        # TODO: static file server and frontend scripts compilation
-      ]
+      script type: "text/javascript", src: url for url in @scripts

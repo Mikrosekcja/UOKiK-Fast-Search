@@ -8,7 +8,6 @@ do (require "source-map-support").install
 app.use flatiron.plugins.http
 
 app.use flatiron.plugins.static,
-  root: __dirname
   dir: "assets/scripts/app/"
   url: "/js"
 

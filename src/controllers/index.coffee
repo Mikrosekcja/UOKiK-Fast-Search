@@ -33,10 +33,25 @@ module.exports =
             
         (error) =>
           if error then @res.json error
-          ranking = _.sortBy ({term, rank} for term, rank of ranking), "rank"
-          ranking = ranking.reverse()
+          ranking   = _.sortBy ({term, rank} for term, rank of ranking), "rank"
+          $ "Ranking is: %j", ranking
+          quantity  = ranking.length
+          ranking   = ranking.slice(-20).reverse()
 
-          @res.json { words, ranking }
+          async.map ranking,
+            (match, done) ->
+              Term.findById match.term, (error, term) ->
+                if error then return done error
+                if not term then return done Error "No such term #{match.term}"
+                $ "Match is: %j", match
+                $ "Term is: %j", term
+                match.term = term
+                done null, match
+            (error, matches) =>
+              if error 
+                @res.statusCode = 500
+                @res.json { error }
+              @res.json { words, quantity, matches }
 
     "/([0-9]+)":
       get: (number) ->

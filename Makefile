@@ -12,14 +12,14 @@ init:
 
 build: clean init
 	./node_modules/.bin/coffee -cm -o lib src
-	./node_modules/.bin/coffee -cm src/scripts/ -o assets/scripts/app/
+	./node_modules/.bin/coffee -cm -o assets/scripts/app/ scripts/
 
 dev: watch
 	NODE_ENV=development DEBUG=ufs,ufs:*,persona,persona:* nodemon
 
 watch: end-watch
 	./node_modules/.bin/coffee -cmw -o lib src          & echo $$! > .watch_pid
-	./node_modules/.bin/coffee -cmw -o assets/scripts/app/ src/scripts/  & echo $$! > .watch_frontend_pid
+	./node_modules/.bin/coffee -cmw -o assets/scripts/app/ scripts/  & echo $$! > .watch_frontend_pid
 
 end-watch:
 	if [ -e .watch_pid ]; then kill `cat .watch_pid`; rm .watch_pid;  else  echo no .watch_pid file; fi
