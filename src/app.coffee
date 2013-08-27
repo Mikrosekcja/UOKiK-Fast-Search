@@ -1,8 +1,10 @@
 flatiron  = require "flatiron"
 app       = flatiron.app
 creamer   = require "creamer"
+mongoose  = require "mongoose"
 
-[]
+do (require "source-map-support").install
+
 app.use flatiron.plugins.http
 app.use creamer,
   layout      : require "./views/layout"
@@ -15,4 +17,7 @@ app.use creamer,
     data.version  = (require "../package.json").version
     # data.marked   = marked
 
-app.start 1234
+app.start 1234, ->
+  # TODO: configuration
+  mongoose.connect ("mongodb://localhost/terms")
+  console.log "Let's get abusive, yo!"
