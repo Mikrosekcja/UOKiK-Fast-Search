@@ -1,27 +1,14 @@
-mongoose  = require "mongoose"
-async     = require "async"
-fs        = require "fs"
-path      = require "path"
-yaml      = require "js-yaml"
-Term      = require "./models/Term"
-Word      = require "./models/Word"
+mongoose    = require "mongoose"
+async       = require "async"
+fs          = require "fs"
+path        = require "path"
+yaml        = require "js-yaml"
+Term        = require "./models/Term"
+Word        = require "./models/Word"
 
-# Lowercase word letters.
-# Big thanks to Debilski: http://stackoverflow.com/a/2013539/1151982
-words_re = ///
-  [
-  a-z
-  æðǝəɛɣĳŋœĸſßþƿȝ
-  ąɓçđɗęħįƙłøơşșţțŧųưy̨ƴ
-  áàâäǎăāãåǻąæǽǣɓćċĉčçďḍđɗðéèėêëěĕēęẹǝəɛġĝǧğģɣ
-  ĥḥħıíìiîïǐĭīĩįịĳĵķƙĸĺļłľŀŉńn̈ňñņŋóòôöǒŏōõőọøǿơœ
-  ŕřŗſśŝšşșṣßťţṭŧþúùûüǔŭūũűůųụưẃẁŵẅƿýỳŷÿȳỹƴźżžẓ
-  ]+
-  ///g
+split_words = require "./split_words"
 
 index = {}
-
-split_words = (text) -> text.toLowerCase().match words_re
 
 save_term = (data, done) ->
   term = new Term data
@@ -69,7 +56,7 @@ if require.main is module
     if error then throw error
     console.log "Import done!"
     console.log "Saving index..."
-    async.each ({word, terms} for word, terms of index),
+    async.each ({_id, terms} for _id, terms of index),
       (o, done) ->
         word = new Word o
         word.save done
