@@ -4,22 +4,13 @@ fs          = require "fs"
 path        = require "path"
 yaml        = require "js-yaml"
 Term        = require "./models/Term"
-Word        = require "./models/Word"
 
 split_words = require "./split_words"
 
-index = {}
 
 save_term = (data, done) ->
   term = new Term data
-  term.save (error) ->
-    if error then return done error
-    words = split_words data.text 
-    for word, position in words
-      if not index[word]? then index[word] = []
-      index[word].push data._id unless data._id in index[word]
-
-    do done  
+  term.save done
 
 import_file = (file, done) ->
   # TODO: check if exists (?)
@@ -55,12 +46,14 @@ if require.main is module
   import_dir dir, (error) ->
     if error then throw error
     console.log "Import done!"
-    console.log "Saving index..."
-    async.each ({_id, terms} for _id, terms of index),
-      (o, done) ->
-        word = new Word o
-        word.save done
-      (error) ->
-        if error then throw error
-        do mongoose.connection.close
-        console.log "All done!"
+    do mongoose.connection.close
+    
+    # console.log "Saving index..."
+    # async.each ({_id, terms} for _id, terms of index),
+    #   (o, done) ->
+    #     word = new Word o
+    #     word.save done
+    #   (error) ->
+    #     if error then throw error
+    #     
+    #     console.log "All done!"

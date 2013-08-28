@@ -1,15 +1,14 @@
 ###
-Word model
-==========
+Cache model
+===========
 
-Index of words in terms
+Cached damerau - levenshtein distances for queries
 
 ###
 
 mongoose    = require "mongoose"
-Term        = require "./Term"
-$           = (require "debug") "Word model"
-# _           = require "underscore"
+$           = (require "debug") "Cache model"
+
 
 # Occurence = new mongoose.Schema
 #   # Term in which a word occurs
@@ -19,11 +18,11 @@ $           = (require "debug") "Word model"
 #   # Position of the word (first, second, etc)
 #   position    : [ Number ]    
 
-Word = new mongoose.Schema
+Cache = new mongoose.Schema
   _id         : 
     type        : String
-  terms       :
-    type        : [ Number ]
-    ref         : 'Term'
+  similar     :
+    type        : [ String ]
+    ref         : 'Index'
 
-module.exports = mongoose.model 'Word', Word
+module.exports = mongoose.model 'Cache', Cache

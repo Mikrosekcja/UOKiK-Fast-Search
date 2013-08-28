@@ -15,6 +15,7 @@ app.controller "SearchController",
 
       req.success (data, status) =>
         console.log data.quantity
+        console.dir data
         @matches = data.matches
 
       req.error (data, status) =>
