@@ -99,7 +99,7 @@ module.exports = ->
       footer id: "footer", ->
         div class: "container", ->
           p class: "text-muted credit", ->
-            text "UOKiK Fast Search #{@version} &copy 'Tadeusz Łazurski'"
+            text "UOKiK Fast Search #{@version} &copy Tadeusz Łazurski"
             do br
             text "This site is not hosted or endorsed in any way by the "
             a 
