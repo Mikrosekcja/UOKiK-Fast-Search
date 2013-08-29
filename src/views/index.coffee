@@ -8,22 +8,23 @@ module.exports = ->
       class : "row"
       ->
         div class: "col-lg-12", ->
-          div class: "input-group input-group-lg", ->
-            input
-              type: "text"
-              class: "form-control"
-              placeholder: "Enter words you are you looking for here"
-              ng:
-                model: "search.query"
-
-            span class: "input-group-btn", ->
-              button
-                type: "button"
-                class: "btn btn-default"
+          form ->
+            div class: "input-group input-group-lg", ->
+              input
+                type: "text"
+                class: "form-control"
+                placeholder: "Enter words you are you looking for here"
                 ng:
-                  click: "search.fetch()"
-                ->
-                  i class: "icon-bolt"
+                  model: "search.query"
+
+              span class: "input-group-btn", ->
+                button
+                  type: "submit"
+                  class: "btn btn-default"
+                  ng:
+                    click: "search.fetch()"
+                  ->
+                    i class: "icon-bolt"
 
 
     div
