@@ -63,40 +63,51 @@ Term.static "findByText", (query, options = {}, callback) ->
     $ "No words in query: %pj", words
     return callback Error "Empty query"
 
-  async.each words,
-    (word, done) =>
-      # TODO: use levenshtein distances
-      Index.findById word, (error, entry) ->
-        $ "Looking for #{word}"
-        $ "%j", entry
-        if error      then done error
-        if not entry  then return do done
+  async.waterfall [
+    (done) -> Index.count done
+    (total) =>
+      async.each words,
+        (word, done) =>
+          # TODO: use levenshtein distances
+          Index.findById word, (error, entry) ->
+            $ "Looking for #{word}"
+            $ "%j", entry
+            if error      then done error
+            if not entry  then return do done
 
-        for term in entry.terms
-          if not ranking[term] then ranking[term] = 1
-          else                      ranking[term]++
+            # How common is this word, and thus how much does it weight in ranking
+            # .5 in weight is arbitrarily choosen. I fill like 1 is too much :)
+            frequency = entry.volume / total
+            weight    = 1 / frequency) * .5
 
-        do done
-        
-    (error) =>
-      if error then return callback error
-      ranking   = _.sortBy ({term, rank} for term, rank of ranking), "rank"
-      $ "Ranking is: %j", ranking
-      quantity  = ranking.length
-      ranking   = ranking.slice(-options.limit).reverse()
+            for term in entry.terms
+              if not ranking[term] then ranking[term]  = weight
+              else                      ranking[term] += weight
 
-      async.map ranking,
-        (match, done) =>
-          @findById match.term, (error, term) ->
-            if error    then return done error
-            if not term then return done Error "No such term #{match.term}"
-            $ "Match is: %j", match
-            $ "Term is: %j", term
-            match.term = term
-            done null, match
-        (error, matches) =>
-          callback error, matches, quantity, words
+            do done
+            
+        (error) =>
+          if error then return callback error
+          ranking   = _.sortBy ({term, rank} for term, rank of ranking), "rank"
+          $ "Ranking is: %j", ranking
+          quantity  = ranking.length
+          ranking   = ranking.slice(-options.limit).reverse()
 
+          async.map ranking,
+            (match, done) =>
+              @findById match.term, (error, term) ->
+                if error    then return done error
+                if not term then return done Error "No such term #{match.term}"
+                $ "Match is: %j", match
+                $ "Term is: %j", term
+                match.term = term
+                done null, match
+            (error, matches) =>
+              callback error, matches, quantity, words
+
+
+  ]
+  
 
 Term.post "save", (term) ->
   words = split_words term.text

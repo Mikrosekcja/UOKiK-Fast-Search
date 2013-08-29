@@ -34,6 +34,6 @@ module.exports = ->
           a href: "/{{match.term._id}}", ->
             div class: "well term", ->
               p class: "text", "{{match.term.text}}"
-              p class: "small", ->
-                strong "{{match.term._id}}"
-                text " {{match.rank}}"
+              div class: "row", ->
+                div class: "col-xs-6", -> p class: "small", -> strong "{{match.term._id}}"
+                div class: "col-xs-6", -> p class: "small text-muted", " {{match.rank.toFixed(2)}}"
