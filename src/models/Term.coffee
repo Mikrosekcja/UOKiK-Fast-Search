@@ -78,7 +78,7 @@ Term.static "findByText", (query, options = {}, callback) ->
             # How common is this word, and thus how much does it weight in ranking
             # .5 in weight is arbitrarily choosen. I fill like 1 is too much :)
             frequency = entry.volume / total
-            weight    = 1 / frequency) * .5
+            weight    = (1 / frequency) * .5
 
             for term in entry.terms
               if not ranking[term] then ranking[term]  = weight
