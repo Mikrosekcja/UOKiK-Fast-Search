@@ -100,10 +100,17 @@ Term.static "findByText", (query, options = {}, callback) ->
 
 Term.post "save", (term) ->
   words = split_words term.text
+
   async.each words,
     (word, done) ->
       Index.update { _id: word },
-        { $push: terms: term }
+        {
+          $addToSet:
+            terms: term
+          $inc:
+            volume: 1
+          length: word.length
+        }
         { upsert: true }
         (error, number, response) ->
           if error then return done error
