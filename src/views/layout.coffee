@@ -6,6 +6,7 @@ module.exports = ->
     "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"
     "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"
     "//ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"
+    "//ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-route.min.js"
     "/js/browserified.js"
   ]
 

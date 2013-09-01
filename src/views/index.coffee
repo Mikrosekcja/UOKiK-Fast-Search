@@ -22,7 +22,7 @@ module.exports = ->
                   type: "submit"
                   class: "btn btn-default"
                   ng:
-                    click: "search.fetch()"
+                    click: "search.search()"
                   ->
                     i class: "icon-bolt"
 
