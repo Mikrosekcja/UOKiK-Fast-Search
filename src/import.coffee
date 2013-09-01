@@ -5,7 +5,6 @@ path        = require "path"
 yaml        = require "js-yaml"
 Term        = require "./models/Term"
 
-split_words = require "./split_words"
 
 
 save_term = (data, done) ->

@@ -1,6 +1,5 @@
 async       = require "async"
 Term        = require "../models/Term"
-split_words = require "../split_words"
 debug       = require "debug"
 _           = require "underscore"
 

@@ -11,6 +11,7 @@ mongoose    = require "mongoose"
 $           = (require "debug") "ufs:model:Term"
 async       = require "async"
 _           = require "underscore"
+_.words     = require "underscore.string.words"
 
 Term = new mongoose.Schema
   _id         : # Number of term in register
@@ -20,9 +21,6 @@ Term = new mongoose.Schema
     required    : yes
   original_uri:
     type        : String
-
-# TODO: Abstract out and move to fulltext.coffee
-split_words = require "../split_words" # TODO: pack
 
 Index = require "./Index"
 Cache = require "./Cache"
@@ -55,9 +53,9 @@ Term.static "findByText", (query, options = {}, callback) ->
   ranking   = {}                # { term: rank } dictionary
 
   if query instanceof Array
-    words.concat split_words s for s in query
+    words.concat _.words s for s in query
   else 
-    words = split_words query
+    words = _.words query
 
   if not words
     $ "No words in query: %pj", words
@@ -110,7 +108,7 @@ Term.static "findByText", (query, options = {}, callback) ->
   
 
 Term.post "save", (term) ->
-  words = split_words term.text
+  words = _.words term.text
 
   async.each words,
     (word, done) ->
