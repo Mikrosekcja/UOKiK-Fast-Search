@@ -1,5 +1,7 @@
 PATH:=./node_modules/.bin/:$(PATH)
+BROWSERIFY := $(shell cat .browserify | sed 's/.*/-r & /g')
 
+# $(for package in $(cat .browserify); do echo -n " -r $package"; done)
 all: install build test start
 
 clean:
@@ -10,9 +12,13 @@ init:
 	if [ -e npm-shrinkwrap.json ]; then rm npm-shrinkwrap.json; fi
 	npm install
 
-build: clean init
+browserify:
+	browserify $(BROWSERIFY) > assets/scripts/app/browserified.js
+
+build: clean init browserify
 	./node_modules/.bin/coffee -cm -o lib src
 	./node_modules/.bin/coffee -cm -o assets/scripts/app/ scripts/
+	
 
 dev: watch
 	NODE_ENV=development DEBUG=ufs,ufs:*,persona,persona:* nodemon
