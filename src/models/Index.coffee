@@ -30,4 +30,4 @@ Index = new mongoose.Schema
     type        : [ Number ]
     ref         : 'Term'
 
-module.exports = mongoose.model 'Index', Index
+module.exports = mongoose.model 'fulltext.index', Index

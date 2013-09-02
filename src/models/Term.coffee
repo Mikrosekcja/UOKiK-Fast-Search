@@ -4,7 +4,6 @@ Term model
 
 Single prohibited contract term from the register
 
- 
 ###
 
 mongoose    = require "mongoose"
@@ -12,6 +11,9 @@ $           = (require "debug") "ufs:model:Term"
 async       = require "async"
 _           = require "underscore"
 _.words     = require "underscore.string.words"
+Index       = require "./Index"
+Similar     = require "./Similar"
+dld         = require "damerau-levenshtein"
 
 Term = new mongoose.Schema
   _id         : # Number of term in register
@@ -22,9 +24,6 @@ Term = new mongoose.Schema
   original_uri:
     type        : String
 
-Index = require "./Index"
-Cache = require "./Cache"
-dld   = require "damerau-levenshtein"
 
 Term.static "findByText", (query, options = {}, callback) ->
   # Query can be 
@@ -41,7 +40,7 @@ Term.static "findByText", (query, options = {}, callback) ->
   # * words     - words extracted from query
 
   defaults  =
-    limit: 20
+    limit     : 20
 
   if typeof options is 'function'
     callback  = options
@@ -55,19 +54,34 @@ Term.static "findByText", (query, options = {}, callback) ->
   if query instanceof Array
     words.concat _.words s for s in query
   else 
-    words = _.words query
+    words = _.unique (_.words query) # TODO: unique
 
   if not words
     $ "No words in query: %pj", words
     return callback Error "Empty query"
 
   async.waterfall [
+    # Count all distinct words
     (done) -> Index.count done
-    (total) =>
+    
+    # Expand similarities
+    (total, done) ->
+      similars = []
+
+      async.each words,
+        (word, done) -> Similar.getSimilar word, (error, similar) ->
+          $ "Got %d words similar to '%s'", similar.length, word
+          similars = similars.concat similar
+          do done
+        (error) ->
+          if error then return done error
+          done null, total, _.unique similars
+
+    # Search for terms
+    (total, words) =>
       async.each words,
         (word, done) =>
-          # TODO: use levenshtein distances
-          Index.findById word, (error, entry) ->
+          Index.findById word._id, (error, entry) ->
             $ "Looking for #{word}"
             $ "%j", entry
             if error      then done error
@@ -75,8 +89,9 @@ Term.static "findByText", (query, options = {}, callback) ->
 
             # How common is this word, and thus how much does it weight in ranking
             # .5 in weight is arbitrarily choosen. I fill like 1 is too much :)
+            # Also the more fuzzy the match is, the less it weights. TODO: is this a good idea?
             frequency = entry.volume / total
-            weight    = (1 / frequency) * .5
+            weight    = (1 / frequency) * .5 * word.similarity
 
             for term in entry.terms
               if not ranking[term] then ranking[term]  = weight

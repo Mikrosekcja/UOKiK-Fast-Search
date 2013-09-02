@@ -47,12 +47,3 @@ if require.main is module
     console.log "Import done!"
     do mongoose.connection.close
     
-    # console.log "Saving index..."
-    # async.each ({_id, terms} for _id, terms of index),
-    #   (o, done) ->
-    #     word = new Word o
-    #     word.save done
-    #   (error) ->
-    #     if error then throw error
-    #     
-    #     console.log "All done!"
