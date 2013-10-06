@@ -13,7 +13,6 @@ _           = require "underscore"
 _.words     = require "underscore.string.words"
 Index       = require "./Index"
 Similar     = require "./Similar"
-dld         = require "damerau-levenshtein"
 
 Term = new mongoose.Schema
   _id         : # Number of term in register
