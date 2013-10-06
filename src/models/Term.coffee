@@ -7,12 +7,14 @@ Single prohibited contract term from the register
 ###
 
 mongoose    = require "mongoose"
-$           = (require "debug") "ufs:model:Term"
 async       = require "async"
 _           = require "underscore"
 _.words     = require "underscore.string.words"
 Index       = require "./Index"
 Similar     = require "./Similar"
+
+debug       = require "debug"
+$           = debug "ufs:model:Term"
 
 Term = new mongoose.Schema
   _id         : # Number of term in register
@@ -30,13 +32,15 @@ Term.static "findByText", (query, options = {}, callback) ->
   # * [String]  - Array of words, will be sanitized
 
   # Options is a dictionary. Possible values:
-  # * limit     - maximal number of matching terms
+  # * limit     - maximal number of matching terms, default 20
 
-  # Callback is a function with signature
+  # Callback is a function with signature like so:
   # * error
   # * matches   - array of matching terms {term, rank}
   # * quantity  - number of matched terms (before limit is applied)
   # * words     - words extracted from query
+
+  $ = debug "ufs:model:Term:findByText"
 
   defaults  =
     limit     : 20
@@ -53,7 +57,7 @@ Term.static "findByText", (query, options = {}, callback) ->
   if query instanceof Array
     words.concat _.words s for s in query
   else 
-    words = _.unique (_.words query) # TODO: unique
+    words = _.unique (_.words query)
 
   if not words
     $ "No words in query: %pj", words
