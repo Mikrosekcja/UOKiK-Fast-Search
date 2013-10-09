@@ -41,7 +41,7 @@ app.controller "SearchController",
         req = @$http.post "/", query: words
 
         req.success (data, status) =>
-          @matches = data.matches
+          @terms = data
 
         req.error (data, status) =>
           console.error status

@@ -52,7 +52,6 @@ Term.static "findByText", (query, options = {}, callback) ->
     options = _.defaults options, defaults
 
   words     = []
-  ranking   = {}                # { term: rank } dictionary
 
   if query instanceof Array
     words.concat _.words s for s in query
@@ -64,66 +63,64 @@ Term.static "findByText", (query, options = {}, callback) ->
     return callback Error "Empty query"
 
   async.waterfall [
-    # Count all distinct words
-    (done) -> Index.count done
-    
-    # Expand similarities
-    (total, done) ->
-      similars = []
+    # Step 1: prepare ranking
+    (done) ->
+      ranking   = {} # { term: rank } dictionary
 
       async.each words,
-        (word, done) -> Similar.getSimilar word, (error, similar) ->
-          $ "Got %d words similar to '%s'", similar.length, word
-          similars = similars.concat similar
-          do done
+        (word, done) ->
+          terms = [] # Terms yield by this word
+
+          Similar.getSimilar word, (error, similar) ->
+            $ "Got %d words similar to '%s'", similar.length, word
+            async.each similar,
+              (similar_word, done) ->
+                # Get terms for this similar word
+                Index.findById similar_word._id, (error, entry) ->
+                  if error      then done error
+                  if not entry  then return do done
+                  $ "Word %s: %j", similar_word, entry
+                  terms = _.union terms, entry.terms
+
+                  do done
+
+              (error) ->
+                # Here we are after each similar word is looked up
+                # and all the terms yield for this excact word are stored in terms array
+                if error then done error
+
+                value = 1 / terms.length # relative value of this word
+                for term in terms 
+                  if not ranking[term]? then ranking[term] = 0
+                  ranking[term] += value
+
+                do done
+
         (error) ->
-          if error then return done error
-          done null, total, _.unique similars
+          # Here all the words from query were looked up
+          # The ranking is ready
+          done error, ranking
+    
+    # step 2: get actual terms based on ranking
+    (ranking, done) =>
+      ranking   = _.sortBy ({term_id, rank} for term_id, rank of ranking), "rank"
+      $ "Ranking is: ", ranking
+      # [{term_id: rank}, {term_id: rank}, ...]
+      quantity  = ranking.length
+      ranking   = ranking.slice(-options.limit)
 
-    # Search for terms
-    (total, words) =>
-      async.each words,
-        (word, done) =>
-          Index.findById word._id, (error, entry) ->
-            $ "Looking for #{word}"
-            $ "%j", entry
-            if error      then done error
-            if not entry  then return do done
+      ids = (position.term_id for position in ranking) # array of term ids
+      $ "Looking for terms with ids: %j",  ids
+      @find _id: $in: ids, (error, terms) ->
+        if error then return done error
+        $ "Got %d terms", terms.length
+        terms = _.map ranking, (position) ->
+          term = _.find terms, (term) -> term.id is position.term_id
+          _.extend term.toObject(), position
 
-            # How common is this word, and thus how much does it weight in ranking
-            # .5 in weight is arbitrarily choosen. I fill like 1 is too much :)
-            # Also the more fuzzy the match is, the less it weights. TODO: is this a good idea?
-            frequency = entry.volume / total
-            weight    = (1 / frequency) * .5 * word.similarity
-
-            for term in entry.terms
-              if not ranking[term] then ranking[term]  = weight
-              else                      ranking[term] += weight
-
-            do done
-            
-        (error) =>
-          if error then return callback error
-          ranking   = _.sortBy ({term, rank} for term, rank of ranking), "rank"
-          $ "Ranking is: %j", ranking
-          quantity  = ranking.length
-          ranking   = ranking.slice(-options.limit).reverse()
-
-          async.map ranking,
-            (match, done) =>
-              @findById match.term, (error, term) ->
-                if error    then return done error
-                if not term then return done Error "No such term #{match.term}"
-                $ "Match is: %j", match
-                $ "Term is: %j", term
-                match.term = term
-                done null, match
-            (error, matches) =>
-              callback error, matches, quantity, words
-
-
-  ]
-  
+        $ "%d", terms[0].rank
+        done null, (_.sortBy terms, "rank").reverse()
+  ], callback  
 
 Term.post "save", (term) ->
   words = _.words term.text

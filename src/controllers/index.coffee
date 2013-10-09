@@ -11,13 +11,16 @@ module.exports =
     post: ->
       $ = debug "ufs:controllers:index:post"
       query = @req.body?.query or ""
-      Term.findByText query, (error, matches, quantity, words) =>
+      Term.findByText query, (error, terms) =>
         if error 
+          $ "Error getting terms by text: %j", error
           @res.statusCode = 500
           { name, message } = error
           return @res.json error: { name, message }
 
-        @res.json { matches, quantity, words }
+        $ "Terms are", terms
+        $ "Best match is: %d", terms[0].rank
+        @res.json terms
               
 
     "/([0-9]+)":
