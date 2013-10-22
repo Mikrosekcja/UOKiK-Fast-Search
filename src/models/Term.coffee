@@ -118,7 +118,7 @@ Term.static "findByText", (query, options = {}, callback) ->
           term = _.find terms, (term) -> term.id is position.term_id
           _.extend term.toObject(), position
 
-        $ "%d", terms[0].rank
+        # $ "%d", terms[0].rank
         done null, (_.sortBy terms, "rank").reverse()
   ], callback  
 

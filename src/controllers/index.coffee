@@ -19,7 +19,7 @@ module.exports =
           return @res.json error: { name, message }
 
         $ "Terms are", terms
-        $ "Best match is: %d", terms[0].rank
+        $ "Best match is: %d", terms[0]?.rank
         @res.json terms
               
 

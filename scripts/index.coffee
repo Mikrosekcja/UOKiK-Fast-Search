@@ -37,7 +37,8 @@ app.controller "SearchController",
         window.location = @query
 
 
-    fetch: (words) ->
+    fetch: (words) =>
+        @terms = {}
         req = @$http.post "/", query: words
 
         req.success (data, status) =>
