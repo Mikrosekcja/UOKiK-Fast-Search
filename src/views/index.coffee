@@ -31,10 +31,10 @@ module.exports = ->
       id: "terms"
       class: "row"
       ->
-        div class: "col-sm-4 col-lg-3", ng: repeat: "term in search.terms", ->
-          a href: "/{{term._id}}", ->
-            div class: "well term", ->
+        div class: "col-lg-12", ng: repeat: "term in search.terms", ->
+          div class: "well term", ->
+            a href: "/{{term._id}}", ->
               p class: "text", "{{term.text}}"
-              div class: "row", ->
-                div class: "col-xs-6", -> p class: "small", -> strong "{{term._id}}"
-                div class: "col-xs-6", -> p class: "small text-muted", " {{term.rank.toFixed(2)}}"
+            div class: "row", ->
+              div class: "col-lg-10", -> p class: "small", -> strong "{{term._id}}"
+              div class: "col-lg-2",  -> p class: "small text-muted", " {{term.rank.toFixed(2)}}"

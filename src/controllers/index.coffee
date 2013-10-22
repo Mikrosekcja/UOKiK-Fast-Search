@@ -11,7 +11,7 @@ module.exports =
     post: ->
       $ = debug "ufs:controllers:index:post"
       query = @req.body?.query or ""
-      Term.findByText query, (error, terms) =>
+      Term.findByText query, limit: 100, (error, terms) =>
         if error 
           $ "Error getting terms by text: %j", error
           @res.statusCode = 500
