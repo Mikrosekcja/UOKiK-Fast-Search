@@ -10,7 +10,7 @@ clean:
 
 browserify:
 	mkdir -p assets/scripts/app/
-	browserify $(BROWSERIFY) > assets/scripts/app/browserified.js
+	node_modules/.bin/browserify $(BROWSERIFY) > assets/scripts/app/browserified.js
 
 build: clean browserify
 	./node_modules/.bin/coffee -cm -o lib src
