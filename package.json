@@ -27,7 +27,8 @@
     "browserify": "~2.29.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "make build"
   },
   "author": "",
   "license": "BSD"

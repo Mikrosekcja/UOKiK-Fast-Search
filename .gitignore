@@ -1,7 +1,6 @@
 node_modules/
 terms/
 lib/
-*.sublime-project
 *.sublime-workspace
 npm-debug.log
 .watch_*

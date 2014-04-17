@@ -8,14 +8,11 @@ clean:
 	rm -rf lib/*
 	rm -rf assets/scripts/app/*
 
-init:
-	if [ -e npm-shrinkwrap.json ]; then rm npm-shrinkwrap.json; fi
-	npm install
-
 browserify:
+	mkdir -p assets/scripts/app/
 	browserify $(BROWSERIFY) > assets/scripts/app/browserified.js
 
-build: clean init browserify
+build: clean browserify
 	./node_modules/.bin/coffee -cm -o lib src
 	./node_modules/.bin/coffee -cm -o assets/scripts/app/ scripts/
 	
@@ -30,12 +27,6 @@ watch: end-watch
 end-watch:
 	if [ -e .watch_pid ]; then kill `cat .watch_pid`; rm .watch_pid;  else  echo no .watch_pid file; fi
 	if [ -e .watch_frontend_pid ]; then kill `cat .watch_frontend_pid`; rm .watch_frontend_pid; else echo no .watch_pid file; fi
-
-start:
-	npm start
-
-test:
-	npm test
 
 docs:
 	echo "Error: no docs generator installed"
