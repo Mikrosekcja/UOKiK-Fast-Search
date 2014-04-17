@@ -1,4 +1,4 @@
-PATH:=./node_modules/.bin/:$(PATH)
+PATH:=./bin/:./node_modules/.bin/:$(PATH)
 BROWSERIFY := $(shell cat .browserify | sed 's/.*/-r & /g')
 
 # $(for package in $(cat .browserify); do echo -n " -r $package"; done)
