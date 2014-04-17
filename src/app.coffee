@@ -1,9 +1,9 @@
+do (require "source-map-support").install
+
 flatiron  = require "flatiron"
 app       = flatiron.app
 creamer   = require "creamer"
-mongoose  = require "mongoose"
 
-do (require "source-map-support").install
 
 app.use flatiron.plugins.http
 
@@ -22,7 +22,6 @@ app.use creamer,
     data.version  = (require "../package.json").version
     # data.marked   = marked
 
-app.start 1234, ->
+app.start process.env.PORT or 1234, ->
   # TODO: configuration
-  mongoose.connect ("mongodb://localhost/terms")
   console.log "Let's get abusive, yo!"

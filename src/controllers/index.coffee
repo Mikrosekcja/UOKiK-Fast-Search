@@ -1,7 +1,10 @@
 async       = require "async"
-Term        = require "../models/Term"
 debug       = require "debug"
 _           = require "underscore"
+elastic = require "elasticsearch"
+
+es      = new elastic.Client
+  host: 'localhost:9200'
 
 module.exports =
   "/":
@@ -11,27 +14,39 @@ module.exports =
     post: ->
       $ = debug "ufs:controllers:index:post"
       query = @req.body?.query or ""
-      Term.findByText query, limit: 100, (error, terms) =>
-        if error 
-          $ "Error getting terms by text: %j", error
-          @res.statusCode = 500
-          { name, message } = error
-          return @res.json error: { name, message }
+  
+      es.search
+        index   : 'ab2c'
+        type    : 'term'
+        body    :
+          query   :
+            match   :
+               text   : query
 
-        $ "Terms are", terms
-        $ "Best match is: %d", terms[0]?.rank
-        @res.json terms
+        (error, result) =>
+          if error then throw error
+
+          terms = result.hits.hits.map (hit) ->
+            {
+              _id         : hit._source._id
+              term_id     : hit._source._id
+              original_uri: '#'
+              text        : hit._source.text
+              rank        : hit._score
+            }
+          @res.json terms
+
               
 
-    "/([0-9]+)":
-      get: (number) ->
-        Term.findById number, (error, term) =>
-          if error    then return @bind "error", error
-          if not term
-            @res.statusCode = 404
-            error           = Error "Term not found"
-            error.name      = 404
-            return @bind "error", error
+    # "/([0-9]+)":
+    #   get: (number) ->
+    #     Term.findById number, (error, term) =>
+    #       if error    then return @bind "error", error
+    #       if not term
+    #         @res.statusCode = 404
+    #         error           = Error "Term not found"
+    #         error.name      = 404
+    #         return @bind "error", error
 
-          @bind "term", term
+    #       @bind "term", term
 
