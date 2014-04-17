@@ -1,10 +1,19 @@
 async       = require "async"
 debug       = require "debug"
 _           = require "underscore"
-elastic = require "elasticsearch"
+elastic     = require "elasticsearch"
+
+$           = debug   "ufs:controllers:index"
+
+db_port     = 9200
+db_host     = process.env["DB_PORT_ #{db_port}_TCP_ADDR"] or 'localhost'
+db_url      = db_host + ':' + db_port
+
+$ "Connecting to %s", db_url
 
 es      = new elastic.Client
-  host: 'localhost:9200'
+  host: db_url
+  # log : "trace"
 
 module.exports =
   "/":
