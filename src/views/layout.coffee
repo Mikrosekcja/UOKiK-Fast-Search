@@ -59,7 +59,7 @@ module.exports = ->
               text-decoration: initial
 
           .term .text
-            height 120px
+            max-height 120px
             overflow hidden
             text-overflow ellipsis
       """
