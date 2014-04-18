@@ -5,14 +5,8 @@ elastic     = require "elasticsearch"
 
 $           = debug   "ufs:controllers:index"
 
-db_port     = 9200
-db_host     = process.env["DB_PORT_ #{db_port}_TCP_ADDR"] or 'localhost'
-db_url      = db_host + ':' + db_port
-
-$ "Connecting to %s", db_url
-
 es      = new elastic.Client
-  host: db_url
+  host: process.env.ELASTICSEARCH_URL or 'http://localhost:9200'
   # log : "trace"
 
 module.exports =
