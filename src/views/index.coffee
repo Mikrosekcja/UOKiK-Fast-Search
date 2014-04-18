@@ -36,5 +36,8 @@ module.exports = ->
             a href: "/{{term._id}}", ->
               p class: "text", "{{term.text}}"
             div class: "row", ->
-              div class: "col-lg-10", -> p class: "small", -> strong "{{term._id}}"
-              div class: "col-lg-2",  -> p class: "small text-muted", " {{term.rank.toFixed(2)}}"
+              div class: "col-lg-10", -> p class: "small", ->
+                strong  "{{term._id}} "
+                text    "({{ term.register_date | date: 'yyyy-MM-dd'}})"
+                do br
+                span class: "text-muted", " {{term.rank.toFixed(2)}}"

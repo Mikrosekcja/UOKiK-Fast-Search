@@ -23,6 +23,7 @@ module.exports =
     post: ->
       $ = debug "ufs:controllers:index:post"
       query = @req.body?.query or ""
+      $ "Looking for %s", query
   
       es.search
         index   : 'ab2c'
@@ -36,13 +37,10 @@ module.exports =
           if error then throw error
 
           terms = result.hits.hits.map (hit) ->
-            {
-              _id         : hit._source._id
+            _.extend hit._source,
               term_id     : hit._source._id
               original_uri: '#'
-              text        : hit._source.text
               rank        : hit._score
-            }
           @res.json terms
 
               
