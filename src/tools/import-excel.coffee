@@ -53,9 +53,9 @@ moment  = require "moment"
 elastic = require "elasticsearch"
 
 es      = new elastic.Client
-  host: 'localhost:9200',
-  log : 'trace'
-
+  host: process.env.ELASTICSEARCH_URL or 'http://localhost:9200'
+  log : "trace"
+-  
 keys = [
   '_id'
   'court_date'  
@@ -69,9 +69,9 @@ keys = [
   'market'
 ]
 get_date = (value) -> 
-    moment '1900-01-01'
-      .add 'days', value
-      .toDate()
+  moment '1900-01-01'
+    .add 'days', value
+    .toDate()
 
 transformations = 
   'court_date'    : get_date
@@ -81,7 +81,48 @@ console.log "Importing. This can take several minutes..."
 
 async.waterfall [
   (done) -> es.ping requestTimeout: 1000, (error) -> done error
-  (done) -> excel "./rejestr.xlsx", done
+  # TODO: run next steps only if reset command line option is set
+  (done) -> es.indices.exists index: 'ab2c', done
+  (exists, status, done) -> 
+    if exists then es.indices.delete index: 'ab2c', done
+    else done null
+  (msg, status, done) ->
+    console.log "creating index"
+    es.indices.create 
+      index   : 'ab2c'
+      body    :
+        mappings:
+          term    :
+            properties:
+              court     :
+                type      : "string"
+              court_date:
+                type      : "date"
+                format    : "dateOptionalTime"
+              court_sign:
+                type      : "string"
+              defendants:
+                type      : "string"
+              market    : 
+                type      : "string"
+              notes     :
+                type      : "string"
+              plaintiffs:
+                type      : "string"
+              register_date:
+                 type     : "date"
+                 format   : "dateOptionalTime"
+              text      :
+                 type     : "string"
+                 analyzer : "polish"
+      done
+
+  (msg, status, done) ->
+    console.log "Index and mapping are set"
+    done null
+  (done) -> 
+    console.log "Parsing excel file"
+    excel "./rejestr.xlsx", done
   (data, done) ->
     console.log "Processing %d rows", data.length
     do data.shift # first row is a header
