@@ -3,7 +3,7 @@ module.exports = ->
     div class: "panel-heading", ->
       h3 ->
         i class: "icon-frown", " "
-        text  "Error #{@name} "
+        text  "Rerror... em... #{@name} "
         small @message
     div class: "panel-body", ->
       p ->

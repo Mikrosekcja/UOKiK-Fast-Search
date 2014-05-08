@@ -39,15 +39,21 @@ module.exports =
 
               
 
-    # "/([0-9]+)":
-    #   get: (number) ->
-    #     Term.findById number, (error, term) =>
-    #       if error    then return @bind "error", error
-    #       if not term
-    #         @res.statusCode = 404
-    #         error           = Error "Term not found"
-    #         error.name      = 404
-    #         return @bind "error", error
+    "/([0-9]+)":
+      get: (number) ->
+        console.log "GET /#{number}"
+        es.getSource
+          index   : "ab2c"
+          type    : "term"
+          id      : number
+          (error, term) =>
+            console.dir { error, term }
+            if error    then return @bind "error", error
+            if not term
+              @res.statusCode = 404
+              error           = Error "Term not found"
+              error.name      = 404
+              return @bind "error", error
 
-    #       @bind "term", term
+            @bind "term", term
 

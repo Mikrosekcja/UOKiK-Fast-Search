@@ -2,47 +2,6 @@
 #
 # The file can be downloaded from <http://uokik.gov.pl/download.php?id=1064>
 #
-# To prepare the index run following commands in Sense
-# <http://localhost:9200/_plugin/marvel/sense/index.html
-###
-DELETE /ab2c/
-PUT /ab2c/
-PUT /ab2c/_mapping/term
-{
-  "properties": {
-     "court": {
-        "type": "string"
-     },
-     "court_date": {
-        "type": "date",
-        "format": "dateOptionalTime"
-     },
-     "court_sign": {
-        "type": "string"
-     },
-     "defendants": {
-        "type": "string"
-     },
-     "market": {
-        "type": "string"
-     },
-     "notes": {
-        "type": "string"
-     },
-     "plaintiffs": {
-        "type": "string"
-     },
-     "register_date": {
-        "type": "date",
-        "format": "dateOptionalTime"
-     },
-     "text": {
-        "type": "string",
-        "analyzer": "polish"
-     }
-  }
-}
-###
 # TODO: download xlsx file
 # TODO: prepare index
 

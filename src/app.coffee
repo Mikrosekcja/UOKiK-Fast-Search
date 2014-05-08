@@ -20,6 +20,7 @@ app.use creamer,
     # $ "running creamer attach"
     # data.i18n     = i18n
     data.version  = (require "../package.json").version
+    data.moment   = require "moment"
     # data.marked   = marked
 
 app.start process.env.PORT or 1234, ->
