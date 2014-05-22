@@ -29,7 +29,7 @@ keys = [
 ]
 get_date = (value) -> 
   moment '1900-01-01'
-    .add 'days', value
+    .add 'days', Math.floor (value) - 1
     .toDate()
 
 transformations = 
