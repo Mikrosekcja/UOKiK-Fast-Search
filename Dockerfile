@@ -8,6 +8,7 @@ RUN mkdir /app
 ADD .     /app
 WORKDIR   /app
 
+RUN npm  i
 RUN make build
 
 EXPOSE 3210
