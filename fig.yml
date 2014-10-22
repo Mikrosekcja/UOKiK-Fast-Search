@@ -1,0 +1,13 @@
+web:
+  build: .
+  ports:
+    - "1234:1234"
+  volumes:
+    - .:/app
+  links:
+    - elasticsearch
+  environment:
+    ELASTICSEARCH_URL: 'http://elasticsearch:9200'
+
+elasticsearch:
+  image: lzrski/elasticsearch
